@@ -25,6 +25,12 @@ router.post("/api/transactions", trans.newTransaction);
 // GET endpoints
 router.get("/api/userData", user.userData);
 router.get("/api/transactions", trans.getTransactions);
+router.get("/", (req, res) => {
+    return res.json({
+        status: 200,
+        print: "server working",
+    });
+});
 
 //exports routes
 export default router;
