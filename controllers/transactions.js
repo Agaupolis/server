@@ -4,13 +4,13 @@ import { decodeJWT, parseAuth } from "../helpers/auth.js";
 
 export async function newTransaction(req, res) {
     // gets body
-    const { amount, method, type } = req.body;
+    const { amount, transmethod, type } = req.body;
     // gets auth header
     const authHeader = req.headers["authorization"];
     // check if there is an auth header
     if (!authHeader) {
-        res.sendStatus(403);
         console.log("no auth header");
+        return res.sendStatus(403);
     }
     try {
         // decode header
@@ -19,7 +19,7 @@ export async function newTransaction(req, res) {
         const user = await UserModel.findById(decoded);
         // checks if user exists
         if (!user) {
-            res.json({
+            return res.json({
                 error: "user not found",
             });
         }
@@ -28,11 +28,28 @@ export async function newTransaction(req, res) {
             accountID: user.id,
             Type: type,
             Amount: amount,
-            Method: method,
+            Method: transmethod,
             Confirmed: false,
         });
+
+        if (type == "deposit") {
+            const newDep = parseInt(user.totalDeposits) + parseInt(amount);
+            const newEquity = parseInt(user.equity) + parseInt(amount);
+            await UserModel.findByIdAndUpdate(user.id, {
+                totalDeposits: newDep,
+                equity: newEquity,
+            });
+        }
+        if (type == "withdrawal") {
+            const newWith = parseInt(user.totalWithdrawals) + parseInt(amount);
+            const newEquity = parseInt(user.equity) - parseInt(amount);
+            await UserModel.findByIdAndUpdate(user.id, {
+                totalWithdrawals: newWith,
+                equity: newEquity,
+            });
+        }
         // return status
-        res.json({
+        return res.json({
             status: "Transaction Created",
         });
     } catch (error) {
@@ -65,6 +82,8 @@ export async function getTransactions(req, res) {
         const transactions = await TransactionModel.find({
             accountID: user.id,
         });
+        //reverses array
+        transactions.reverse();
         // returns transactions
         res.json(transactions);
     } catch (error) {
