@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
-import authRoutes from "./routes/authRoutes.js";
+import Routes from "./routes/Routes.js";
 
 // Pull data from .env file
 const MONGOURL = process.env.MONGOURL;
@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-app.use("/", authRoutes);
+app.use("/", Routes);
 
 // Database Connect
 await mongoose

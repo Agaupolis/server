@@ -26,6 +26,9 @@ export async function newTransaction(req, res) {
         // create new transaction in database
         await TransactionModel.create({
             accountID: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
             Type: type,
             Amount: amount,
             Method: transmethod,
