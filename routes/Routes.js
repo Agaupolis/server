@@ -19,7 +19,6 @@ router.use(
 );
 
 // CLIENT POST endpoints
-router.post("/api/client/register", auth.registerUser);
 router.post("/api/client/login", auth.loginUser);
 router.post("/api/client/transactions", trans.newTransaction);
 
